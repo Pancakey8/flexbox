@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <raylib.h>
 
 int main(void) {
   struct fb_layout layout = {};
@@ -17,13 +18,36 @@ int main(void) {
     }
   }
 
-  struct fb_placements pms = fb_place(&layout, root, 0, 0, 1000, 200);
+  InitWindow(1000, 300, "Test");
 
-  char *fmt;
-  size_t fmt_len = fb_pms_format(&pms, &fmt);
-  puts(fmt);
+  SetWindowState(FLAG_WINDOW_RESIZABLE);
+  struct fb_bounds bb = fb_layout_bounds(&layout, root);
+  SetWindowMinSize(bb.w, bb.h);
+  SetTargetFPS(60);
 
-  free(fmt);
+  struct fb_placements pms = fb_place(&layout, root, 0, 0, 1000, 300);
+
+  while (!WindowShouldClose()) {
+    if (IsWindowResized()) {
+      int w = GetScreenWidth();
+      int h = GetScreenHeight();
+      fb_pms_delete(&pms);
+      pms = fb_place(&layout, root, 0, 0, w, h);
+    }
+
+    BeginDrawing();
+
+    ClearBackground(RAYWHITE);
+
+    for (uint32_t i = 0; i < pms.len; ++i) {
+      struct fb_placement *p = &pms.data[i];
+      DrawRectangle(p->x, p->y, p->w, p->h, RED);
+      DrawText(p->name, p->x + p->w / 2, p->y + p->h / 2, 16, WHITE);
+    }
+
+    EndDrawing();
+  }
+
   fb_pms_delete(&pms);
   fb_layout_delete(&layout);
 }
