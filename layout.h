@@ -58,6 +58,24 @@ struct fb_bounds {
 struct fb_bounds fb_layout_bounds(struct fb_layout const *layout,
                                   uint32_t root);
 
+struct fb_placement {
+  char *name;
+  float x, y;
+  float w, h;
+};
+
+struct fb_placements {
+  struct fb_placement *data;
+  uint32_t len, cap;
+};
+
+struct fb_placements fb_place(struct fb_layout const *layout, uint32_t root,
+                              float x, float y, float w, float h);
+
+size_t fb_pms_format(struct fb_placements const *pms, char **out);
+
+void fb_pms_delete(struct fb_placements *pms);
+
 struct fb_builder_ctx {
   struct fb_layout *target;
   uint32_t first;
@@ -97,6 +115,7 @@ void fb_ctx_finish(struct fb_builder_ctx *ctx, enum fb_layout_node_kind kind,
                                         fb_orig_};                             \
        !fb_ctx_.done;                                                          \
        fb_ctx_finish(&fb_ctx_, FB_LAYOUT_ROW, (g_), (a_), (j_)))
+
 #define FB_COL(g_, a_, j_)                                                     \
   for (struct fb_builder_ctx *fb_orig_ = &fb_ctx_,                             \
                              fb_ctx_ = {fb_orig_->target, -1, -1, false,       \

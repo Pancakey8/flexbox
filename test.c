@@ -9,16 +9,21 @@ int main(void) {
 
   uint32_t root;
   FB_AT(&layout, root) {
-    FB_ROW(0, FB_ALIGN_START, FB_JUSTIFY_START) {
-      FB_COL(0, FB_ALIGN_START, FB_JUSTIFY_START) {
-        FB_OBJ("A", 300, 200, 0, FB_ALIGN_START);
-        FB_OBJ("B", 200, 600, 0, FB_ALIGN_START);
-      }
-      FB_OBJ("C", 100, 400, 0, FB_ALIGN_START);
+    FB_ROW(0, FB_ALIGN_START, FB_JUSTIFY_SPACED) {
+      FB_OBJ("A", 100, 100, 0, FB_ALIGN_START);
+      FB_OBJ("B", 100, 100, 0, FB_ALIGN_CENTER);
+      FB_OBJ("C", 100, 100, 0, FB_ALIGN_END);
+      FB_OBJ("D", 100, 100, 0, FB_ALIGN_STRETCH);
     }
   }
 
-  struct fb_bounds bb2 = fb_layout_bounds(&layout, root);
-  printf("%f, %f\n", bb2.w, bb2.h);
+  struct fb_placements pms = fb_place(&layout, root, 0, 0, 1000, 200);
+
+  char *fmt;
+  size_t fmt_len = fb_pms_format(&pms, &fmt);
+  puts(fmt);
+
+  free(fmt);
+  fb_pms_delete(&pms);
   fb_layout_delete(&layout);
 }
