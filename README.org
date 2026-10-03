@@ -1,6 +1,6 @@
 * Flexbox
 
-Small flexbox-like layout in C
+Small flexbox-like layouts in C
 
 #+BEGIN_SRC c
   struct fb_layout layout = {};
