@@ -167,7 +167,3 @@ def sampleMenu2 : Layout :=
     .obj (a := .stretch) "D" 100 100,
   ]
 
-def formatSvg (p : PlacedObject) : String :=
-  s!"{p.name},{p.x},{p.y},{p.w},{p.h}"
-
-#eval place sampleMenu2 0 0 1000 200 |>.map formatSvg |> String.intercalate "|"

@@ -9,3 +9,6 @@ package "flexbox" where
 @[default_target]
 lean_lib «Layout» where
   -- add library configuration options here
+
+@[default_target]
+lean_exe «Harness» where
