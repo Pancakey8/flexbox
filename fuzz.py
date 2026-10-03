@@ -10,6 +10,8 @@ MAX_TREE_DEPTH = 3
 CONTAINER_WIDTH = 1000
 CONTAINER_HEIGHT = 500
 
+EDGE_OBJ_ROOT = 50
+
 EPSILON = 1e-3
 SEED = 6767
 
@@ -37,11 +39,11 @@ class Node:
         children_str = " ".join(c.to_spec() for c in self.children)
         return f"{self.kind} {self.g} {self.a} {self.j} {len(self.children)} {children_str}".strip()
 
-def gen_random_tree(depth=0, obj_counter=None) -> Node:
+def gen_random_tree(depth=0, obj_counter=None, force_object=False) -> Node:
     if obj_counter is None:
         obj_counter = [0]
 
-    if depth >= MAX_TREE_DEPTH or (depth > 0 and random.random() < 0.4):
+    if force_object or depth >= MAX_TREE_DEPTH or (depth > 0 and random.random() < 0.4):
         obj_counter[0] += 1
         return Node(
             kind="O",
@@ -98,7 +100,7 @@ def main():
     print(f"Starting differential fuzzing ({NUM_TESTS} iterations)...\n")
 
     for i in range(1, NUM_TESTS + 1):
-        tree = gen_random_tree()
+        tree = gen_random_tree(force_object=(i <= EDGE_OBJ_ROOT))
         spec = tree.to_spec()
 
         x, y = 0, 0

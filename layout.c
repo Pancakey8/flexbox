@@ -352,10 +352,28 @@ struct fb_placements fb_place(struct fb_layout const *layout, uint32_t root,
   struct fb_placements pms = {};
 
   switch (node->kind) {
-  case FB_LAYOUT_OBJ:
-    // TODO: Special case later
-    fb_assert(false, { return (struct fb_placements){}; });
-    break;
+  case FB_LAYOUT_OBJ: {
+    struct fb_bounds bb = fb_layout_bounds(layout, root);
+    float w_gap = w > bb.w ? (w - bb.w) : 0;
+    float h_gap = h > bb.h ? (h - bb.h) : 0;
+    uint8_t tg = node->growth;
+    uint32_t len = 1;
+    struct fb_place_context ctx = {
+        .i = 0,
+        .n = len,
+        .x = x,
+        .y = y,
+        .w = w,
+        .w_gap = w_gap,
+        .h = h,
+        .h_gap = h_gap,
+        .tg = tg,
+    };
+    struct fb_placement p = fb_compute_row1(layout, root, node->just, &ctx);
+    fb_pms_push(&pms,
+                (struct fb_placement){node->obj.name, p.x, p.y, p.w, p.h});
+    return pms;
+  } break;
   case FB_LAYOUT_ROW:
   case FB_LAYOUT_COL:
     fb_place_rec(&pms, layout, root, x, y, w, h);

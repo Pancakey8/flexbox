@@ -1,1 +1,56 @@
 * Flexbox
+
+Small flexbox-like layout in C
+
+#+BEGIN_SRC c
+  struct fb_layout layout = {};
+  fb_layout_init(&layout, 2);
+
+  uint32_t root;
+  FB_AT(&layout, root) {
+    FB_ROW(0, FB_ALIGN_START, FB_JUSTIFY_SPACED) {
+      FB_OBJ("A", 100, 100, 0, FB_ALIGN_START);
+      FB_OBJ("B", 100, 100, 0, FB_ALIGN_CENTER);
+      FB_OBJ("C", 100, 100, 0, FB_ALIGN_END);
+      FB_OBJ("D", 100, 100, 0, FB_ALIGN_STRETCH);
+    }
+  }
+
+  struct fb_placements pms = fb_place(&layout, root, 0, 0, 1000, 300);
+#+END_SRC
+
+** Building
+
+The library is only two files, ~layout.c~ and ~layout.h~. When using,
+ensure ~layout.c~ is linked into the project and that ~layout.h~ is in
+the include path.
+
+The Raylib demo found in [[file:test.c][test.c]] may be separately compiled with,
+
+#+BEGIN_SRC sh
+  cc -o test -std=c23 test.c layout.c -lraylib
+#+END_SRC
+
+** Fuzzing
+
+The library has a small Lean4 specification in the [[file:spec/][spec/]] directory. To
+fuzz the project, first compile the two harnesses:
+
+Lean harness (Note: due to Mathlib dependencies, this might take some time):
+
+#+BEGIN_SRC sh
+  cd spec && lake build Harness
+#+END_SRC
+
+C harness:
+
+#+BEGIN_SRC sh
+  cc -o harness -std=c23 harness.c layout.c
+#+END_SRC
+
+Running the script ~fuzz.py~ will fuzz the two implementations against
+eachother.
+
+#+BEGIN_SRC sh
+  python ./fuzz.py
+#+END_SRC
